@@ -141,7 +141,36 @@
       opacity: 1;
     }
 
+    .carousel-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    scrollbar-width: none;
+    }
+
+    .carousel-scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+    }
+
     @media (max-width: 768px) {
+
+    .carousel-section {
+        height: auto;
+        overflow-x: auto;
+        overflow-y: hidden;      
+        display: flex;
+        justify-content: center;
+    }
+
+    .carousel {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 1rem;
+        padding: 1rem;
+        scroll-snap-type: x mandatory;
+    }
+
     .text-left {
         font-size: 0.65rem;
         left: -120px;
@@ -185,6 +214,11 @@
         min-width: 200px;
         min-height: 130px;
     }
+
+    .image-wrapper {
+      flex: 0 0 auto;
+      scroll-snap-align: center;
+    }
     }
 
   </style>
@@ -192,6 +226,7 @@
 <body>
 
 <section class="carousel-section">
+  <div class="carousel-scroll-container">
   <div class="carousel">
 
     <div class="image-wrapper">
@@ -279,6 +314,7 @@
     </div>
 
   </div>
+  </div>
 </section>
 
 <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
@@ -291,18 +327,22 @@
   const carousel = document.querySelector(".carousel");
   const totalWidth = carousel.scrollWidth - window.innerWidth - 200;
 
-  gsap.to(carousel, {
-    x: () => -totalWidth,
-    ease: "power1.out",
-    scrollTrigger: {
-      trigger: ".carousel-section",
-      start: "top top",
-      end: () => "+=" + totalWidth,
-      pin: true,
-      scrub: 1.5,
-      anticipatePin: 1,
-    },
-  });
+    const isMobile = window.innerWidth <= 768;
+
+    if (!isMobile) {
+    gsap.to(carousel, {
+        x: () => -totalWidth,
+        ease: "power1.out",
+        scrollTrigger: {
+        trigger: ".carousel-section",
+        start: "top top",
+        end: () => "+=" + totalWidth,
+        pin: true,
+        scrub: 1.5,
+        anticipatePin: 1,
+        },
+    });
+    }
 
   const wrappers = document.querySelectorAll('.image-wrapper');
 
