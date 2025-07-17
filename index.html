@@ -283,6 +283,8 @@
 
 <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
 <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
 <script>
   gsap.registerPlugin(ScrollTrigger);
 
@@ -304,63 +306,92 @@
 
   const wrappers = document.querySelectorAll('.image-wrapper');
 
-  wrappers.forEach(wrapper => {
-    const img = wrapper.querySelector('img');
+  function activateCard(wrapper) {
     const leftText = wrapper.querySelector('.text-left');
     const rightText = wrapper.querySelector('.text-right');
     const stackedText = wrapper.querySelector('.text-stacked');
 
-    img.addEventListener('mouseenter', () => {
-      wrappers.forEach(w => {
-        w.classList.add('blur');
-        w.classList.remove('active');
-      });
-      wrapper.classList.remove('blur');
-      wrapper.classList.add('active');
+    wrappers.forEach(w => {
+      w.classList.add('blur');
+      w.classList.remove('active');
+      w.querySelector('.text-left').style.display = "block";
+      w.querySelector('.text-right').style.display = "block";
+      w.querySelector('.text-stacked').style.display = "none";
+    });
 
-      requestAnimationFrame(() => {
-        const leftBox = leftText.getBoundingClientRect();
-        const rightBox = rightText.getBoundingClientRect();
+    wrapper.classList.remove('blur');
+    wrapper.classList.add('active');
 
-        const leftOverflow = leftBox.left < 0;
-        const rightOverflow = rightBox.right > window.innerWidth;
+    requestAnimationFrame(() => {
+      const leftBox = leftText.getBoundingClientRect();
+      const rightBox = rightText.getBoundingClientRect();
 
-        const showStacked = leftOverflow || rightOverflow;
+      const leftOverflow = leftBox.left < 0;
+      const rightOverflow = rightBox.right > window.innerWidth;
 
-        if (showStacked) {
-          stackedText.innerHTML = `
-            <div class="stacked-left">${leftText.innerText}</div>
-            <div class="stacked-right">${rightText.innerText}</div>
-          `;
-          stackedText.style.display = "flex";
-          leftText.style.display = "none";
-          rightText.style.display = "none";
+      const showStacked = leftOverflow || rightOverflow;
 
-          stackedText.classList.remove("left-edge", "right-edge");
+      if (showStacked) {
+        stackedText.innerHTML = `
+          <div class="stacked-left">${leftText.innerText}</div>
+          <div class="stacked-right">${rightText.innerText}</div>
+        `;
+        stackedText.style.display = "flex";
+        leftText.style.display = "none";
+        rightText.style.display = "none";
 
-          if (leftOverflow) {
-            stackedText.classList.add("left-edge");
-          } else if (rightOverflow) {
-            stackedText.classList.add("right-edge");
-          }
+        stackedText.classList.remove("left-edge", "right-edge");
+
+        if (leftOverflow) {
+          stackedText.classList.add("left-edge");
+        } else if (rightOverflow) {
+          stackedText.classList.add("right-edge");
+        }
+      } else {
+        stackedText.style.display = "none";
+        leftText.style.display = "block";
+        rightText.style.display = "block";
+      }
+    });
+  }
+
+  function deactivateAll() {
+    wrappers.forEach(w => {
+      w.classList.remove('blur');
+      w.classList.remove('active');
+      w.querySelector('.text-left').style.display = "block";
+      w.querySelector('.text-right').style.display = "block";
+      w.querySelector('.text-stacked').style.display = "none";
+    });
+  }
+
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  wrappers.forEach(wrapper => {
+    const img = wrapper.querySelector('img');
+
+    if (isTouch) {
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isActive = wrapper.classList.contains('active');
+        if (isActive) {
+          deactivateAll();
         } else {
-          stackedText.style.display = "none";
-          leftText.style.display = "block";
-          rightText.style.display = "block";
+          activateCard(wrapper);
         }
       });
-    });
 
-    img.addEventListener('mouseleave', () => {
-      wrappers.forEach(w => {
-        w.classList.remove('blur');
-        w.classList.remove('active');
+      document.body.addEventListener('click', (e) => {
+      // Only deactivate if the click is outside any image-wrapper
+      if (!e.target.closest('.image-wrapper')) {
+          deactivateAll();
+      }
       });
 
-      leftText.style.display = "block";
-      rightText.style.display = "block";
-      stackedText.style.display = "none";
-    });
+    } else {
+      img.addEventListener('mouseenter', () => activateCard(wrapper));
+      img.addEventListener('mouseleave', () => deactivateAll());
+    }
   });
 </script>
 
