@@ -142,15 +142,8 @@
     }
 
     .carousel-scroll-container {
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden; /* Prevent drag/scroll on desktop */
     width: 100%;
-    scrollbar-width: none;
-    }
-
-    .carousel-scroll-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
     }
 
     @media (max-width: 768px) {
@@ -218,6 +211,17 @@
     .image-wrapper {
       flex: 0 0 auto;
       scroll-snap-align: center;
+    }
+    
+    .carousel-scroll-container {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .carousel-scroll-container::-webkit-scrollbar {
+        display: none;
     }
     }
 
