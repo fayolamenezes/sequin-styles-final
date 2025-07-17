@@ -319,30 +319,27 @@
 
 <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
 <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
-<script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
 <script>
   gsap.registerPlugin(ScrollTrigger);
 
   const carousel = document.querySelector(".carousel");
   const totalWidth = carousel.scrollWidth - window.innerWidth - 200;
+  const isMobile = window.innerWidth <= 768;
 
-    const isMobile = window.innerWidth <= 768;
-
-    if (!isMobile) {
+  if (!isMobile) {
     gsap.to(carousel, {
-        x: () => -totalWidth,
-        ease: "power1.out",
-        scrollTrigger: {
+      x: () => -totalWidth,
+      ease: "power1.out",
+      scrollTrigger: {
         trigger: ".carousel-section",
         start: "top top",
         end: () => "+=" + totalWidth,
         pin: true,
         scrub: 1.5,
         anticipatePin: 1,
-        },
+      },
     });
-    }
+  }
 
   const wrappers = document.querySelectorAll('.image-wrapper');
 
@@ -405,12 +402,10 @@
     });
   }
 
-  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
   wrappers.forEach(wrapper => {
     const img = wrapper.querySelector('img');
 
-    if (isTouch) {
+    if (isMobile) {
       img.addEventListener('click', (e) => {
         e.stopPropagation();
         const isActive = wrapper.classList.contains('active');
@@ -422,15 +417,13 @@
       });
 
       document.body.addEventListener('click', (e) => {
-      // Only deactivate if the click is outside any image-wrapper
-      if (!e.target.closest('.image-wrapper')) {
+        if (!e.target.closest('.image-wrapper')) {
           deactivateAll();
-      }
+        }
       });
-
     } else {
-      img.addEventListener('mouseenter', () => activateCard(wrapper));
-      img.addEventListener('mouseleave', () => deactivateAll());
+      wrapper.addEventListener('mouseenter', () => activateCard(wrapper));
+      wrapper.addEventListener('mouseleave', () => deactivateAll());
     }
   });
 </script>
